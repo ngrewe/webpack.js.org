@@ -3,13 +3,19 @@ title: ProvidePlugin
 contributors:
   - sokra
   - simon04
+  - ngrewe
 ---
 
 ```javascript
-new webpack.ProvidePlugin({identifier1: 'module1', /* ... */})
+new webpack.ProvidePlugin(
+  {identifier1: 'module1', /* ... */},
+  {test: /\.js$/, include: 'foo', exclude: /bar/})
 ```
 
 Automatically loads modules. Whenever the `identifier` is encountered as free variable in a module, the `module` is loaded automatically and the `identifier` is filled with the exports of the loaded `module`.
+
+The second (optional) parameter is used to specify a [`Condition`](/configuration/module/#condition) that
+determines which files will trigger loading the module.
 
 ## Typical use-cases
 
@@ -37,4 +43,18 @@ Angular looks for `window.jQuery` in order to determine whether jQuery is presen
 new webpack.ProvidePlugin({
   'window.jQuery': 'jquery'
 })
+```
+
+### Bundling a Polyfill
+
+When bundling a polyfill, the polyfill module might make reference to a gobal identifier that you want to
+provide. This manifests in errors where the variable unexpectedly equals `{}`. In that case, you need to
+exclude the polyfill module from being processed by the plugin:
+
+```javascript
+new webpack.ProvidePlugin({
+  'Map': 'es6-map'
+}, {
+  exclude: /es6-map/
+});
 ```
