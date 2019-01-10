@@ -6,6 +6,7 @@ contributors:
   - re-fort
   - byzyk
   - seckin92
+  - ngrewe
 ---
 
 Automatically load modules instead of having to `import` or `require` them everywhere.
@@ -13,6 +14,7 @@ Automatically load modules instead of having to `import` or `require` them every
 ``` js
 new webpack.ProvidePlugin({
   identifier: 'module1',
+  {test: /\.js$/, include: 'foo', exclude: /bar/})
   // ...
 });
 ```
@@ -30,6 +32,8 @@ Whenever the `identifier` is encountered as free variable in a module, the `modu
 
 W> For importing the default export of an ES2015 module, you have to specify the default property of module.
 
+The second (optional) parameter is used to specify a [`Condition`](/configuration/module/#condition) that
+determines which files will trigger loading the module.
 
 ## Usage: jQuery
 
@@ -76,5 +80,19 @@ new webpack.ProvidePlugin({
 ```javascript
 new webpack.ProvidePlugin({
   Vue: ['vue/dist/vue.esm.js', 'default']
+});
+```
+
+### Usage: Bundling a Polyfill
+
+When bundling a polyfill, the polyfill module might make reference to a gobal identifier that you want to
+provide. This manifests in errors where the variable unexpectedly equals `{}`. In that case, you need to
+exclude the polyfill module from being processed by the plugin:
+
+```javascript
+new webpack.ProvidePlugin({
+  'Map': 'es6-map'
+}, {
+  exclude: /es6-map/
 });
 ```
